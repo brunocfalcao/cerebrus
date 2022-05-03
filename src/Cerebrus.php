@@ -6,11 +6,11 @@ class Cerebrus
 {
     private static $_instance = null;
 
-    public const PHP_SESSION_DISABLED = "SESSION_DISABLED";
-    public const PHP_SESSION_NONE = "SESSION_NONE";
-    public const PHP_SESSION_ACTIVE = "SESSION_ACTIVE";
+    public const PHP_SESSION_DISABLED = 'SESSION_DISABLED';
+    public const PHP_SESSION_NONE = 'SESSION_NONE';
+    public const PHP_SESSION_ACTIVE = 'SESSION_ACTIVE';
 
-    private function __construct(string $path = null)
+    public function __construct(string $path = null)
     {
         $status = session_status();
 
@@ -40,7 +40,7 @@ class Cerebrus
         return $_SESSION;
     }
 
-    public function set(string $key, string $value): void
+    public function set(string $key, mixed $value): void
     {
         $_SESSION[$key] = $value;
     }
@@ -69,7 +69,7 @@ class Cerebrus
         return session_id();
     }
 
-    private function start(string $path = 'tmp'): void
+    private function start(string|null $path = 'tmp'): void
     {
         try {
             session_start();
@@ -79,11 +79,11 @@ class Cerebrus
              * Creates and set the session writable directory path
              * in the /tmp on your Laravel project base path.
              */
-            if (!is_dir(session_save_path())) {
-                $path = base_path('tmp');
+            if (! is_dir(session_save_path())) {
+                $path = $path ?? base_path('tmp');
                 mkdir($path);
                 session_save_path($path);
-            };
+            }
 
             session_start();
         }
