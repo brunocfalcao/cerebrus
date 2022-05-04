@@ -30,7 +30,7 @@ class Cerebrus
         return isset($_SESSION[$key]);
     }
 
-    public function get(string $key): ?string
+    public function get(string $key)
     {
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
