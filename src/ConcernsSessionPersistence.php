@@ -35,37 +35,38 @@ trait ConcernsSessionPersistence
      *                          prefixes (that has other session ids).
      * @return void
      */
-public function getOr(callable $callable, bool $invalidate = true)
-{
-    /**
-     * Verify if we have a valid session for this prefix.
-     */
-    $session = new Cerebrus();
+    public function getOr(callable $callable, bool $invalidate = true)
+    {
+        /**
+         * Verify if we have a valid session for this prefix.
+         */
+        $session = new Cerebrus();
 
-    // Remove all prefixes except the one that has this session id.
-    if ($invalidate) {
-        $fullKey = $this->key();
-        foreach ($session->all() as $key => $value) {
-            if (str_starts_with($key, $this->prefix) && $key != $fullKey) {
-                $session->unset($key);
+        // Remove all prefixes except the one that has this session id.
+        if ($invalidate) {
+            $fullKey = $this->key();
+            foreach ($session->all() as $key => $value) {
+                if (str_starts_with($key, $this->prefix) && $key != $fullKey) {
+                    $session->unset($key);
+                }
             }
         }
-    }
 
-    // Do we already have a session key?
-    if ($session->has($this->key())) {
-        return $session->get($this->key());
-    }
+        // Do we already have a session key?
+        if ($session->has($this->key())) {
+            return $session->get($this->key());
+        }
 
-    // Compute and store a session key value (if allowed).
-    $result = $callable();
+        // Compute and store a session key value (if allowed).
+        $result = $callable();
 
-    // Add callable result to session if it's not null or if it's null
-    // the only allowed if allowNulls = true (default = false).
-    if (($result == null && $this->allowNulls) || $result != null) {
-        $session->set($this->key(), $result);
+        // Add callable result to session if it's not null or if it's null
+        // the only allowed if allowNulls = true (default = false).
+        if (($result == null && $this->allowNulls) || $result != null) {
+            $session->set($this->key(), $result);
 
-        return $result;
+            return $result;
+        }
     }
 
     /**
@@ -92,6 +93,12 @@ public function getOr(callable $callable, bool $invalidate = true)
         return (new Cerebrus())->get($this->key());
     }
 
+    /**
+     * If true, will allow session keys with null values.
+     *
+     * @param  bool  $allow
+     * @return $this
+     */
     public function allowNulls(bool $allow = true)
     {
         $this->allowNulls = $allow;
@@ -99,10 +106,18 @@ public function getOr(callable $callable, bool $invalidate = true)
         return $this;
     }
 
+    public function sessionId()
+    {
+        return (new Cerebrus())->getId();
+    }
+
+    /**
+     * Returns the computed key given a prefix.
+     *
+     * @return string
+     */
     protected function key()
     {
-        $session = new Cerebrus();
-
-        return $this->prefix . ':' . $session->getId();
+        return $this->prefix.':'.(new Cerebrus())->getId();
     }
 }
