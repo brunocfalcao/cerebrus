@@ -62,10 +62,11 @@ trait ConcernsSessionPersistence
 
         // Add callable result to session if it's not null or if it's null
         // the only allowed if allowNulls = true (default = false).
-        if (($result == null && $this->allowNulls) || $result != null) {
-            $session->set($this->key(), $result);
-
-            return $result;
+        if (($this->isEmpty($result) && $this->allowNulls) ||
+            !$this->isEmpty($result)) {
+                info('setting ' . $this->key() . ' with value ' . json_encode($result));
+                $session->set($this->key(), $result);
+                return $result;
         }
     }
 
@@ -119,5 +120,14 @@ trait ConcernsSessionPersistence
     protected function key()
     {
         return $this->prefix.':'.(new Cerebrus())->getId();
+    }
+
+    protected function isEmpty($value)
+    {
+        if (is_object($value)) {
+            $value = (array) $value;
+        }
+
+        return empty($value);
     }
 }
