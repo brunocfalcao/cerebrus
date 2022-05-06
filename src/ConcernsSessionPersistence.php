@@ -63,9 +63,9 @@ trait ConcernsSessionPersistence
         // Add callable result to session if it's not null or if it's null
         // the only allowed if allowNulls = true (default = false).
         if (($this->isEmpty($result) && $this->allowNulls) ||
-            !$this->isEmpty($result)) {
-                info('setting ' . $this->key() . ' with value ' . json_encode($result));
+            ! $this->isEmpty($result)) {
                 $session->set($this->key(), $result);
+
                 return $result;
         }
     }
