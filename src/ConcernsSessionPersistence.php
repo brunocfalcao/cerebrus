@@ -26,6 +26,13 @@ trait ConcernsSessionPersistence
     protected $allowNulls = false;
 
     /**
+     * Used with the method $this->alwaysRefreshIf().
+     *
+     * @var bool
+     */
+    protected $forceRefresh = false;
+
+    /**
      * Refreshes the session key, in case the session is invalid.
      *
      * @param  callable  $callable Function to be called in case session in
@@ -53,7 +60,7 @@ trait ConcernsSessionPersistence
         }
 
         // Do we already have a session key?
-        if ($session->has($this->key())) {
+        if ($session->has($this->key()) || $this->forceRefresh) {
             return $session->get($this->key());
         }
 
@@ -68,6 +75,24 @@ trait ConcernsSessionPersistence
 
                 return $result;
         }
+    }
+
+    /**
+     * Forces a session refresh given a callable result.
+     * Must be called BEFORE the getOr() method on the target class.
+     *
+     * @param  callable  $function
+     * @return $this
+     */
+    public function forceRefreshIf(callable $function)
+    {
+        if ($function() == true) {
+            $this->forceRefresh = true;
+        } else {
+            $this->forceRefresh = false;
+        }
+
+        return $this;
     }
 
     /**
