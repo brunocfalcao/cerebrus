@@ -54,7 +54,7 @@ trait ConcernsSessionPersistence
             $fullKey = $this->key();
             foreach ($session->all() as $key => $value) {
                 if (str_starts_with($key, $this->prefix) && $key != $fullKey) {
-                    info('[ConcernsSessionPersistence] - Unsetting "'. $this->key());
+                    info('[ConcernsSessionPersistence] - Unsetting "'.$this->key());
                     $session->unset($key);
                 }
             }
@@ -62,7 +62,8 @@ trait ConcernsSessionPersistence
 
         // Do we already have a session key?
         if ($session->has($this->key()) || $this->forceRefresh) {
-            info('[ConcernsSessionPersistence] - Returning "'. $this->key() . '" key');
+            info('[ConcernsSessionPersistence] - Returning "'.$this->key().'" key');
+
             return $session->get($this->key());
         }
 
@@ -73,7 +74,7 @@ trait ConcernsSessionPersistence
         // the only allowed if allowNulls = true (default = false).
         if (($this->isEmpty($result) && $this->allowNulls) ||
             ! $this->isEmpty($result)) {
-                info('[ConcernsSessionPersistence] - Adding "'. $this->key() . '" with value "' . json_encode($result) . '"');
+                info('[ConcernsSessionPersistence] - Adding "'.$this->key().'" with value "'.json_encode($result).'"');
                 $session->set($this->key(), $result);
 
                 return $result;
@@ -150,6 +151,7 @@ trait ConcernsSessionPersistence
         if (is_null($this->prefix)) {
             throw new \Exception('Cerebrus session prefix cannot be null');
         }
+
         return $this->prefix.':'.(new Cerebrus())->getId();
     }
 
