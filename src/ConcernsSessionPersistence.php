@@ -51,6 +51,7 @@ trait ConcernsSessionPersistence
 
         // Remove all prefixes except the one that has this session id.
         if ($invalidate) {
+            info('[ConcernsSessionPersistence] Invalidation requested for key ' . $this->prefix);
             $fullKey = $this->key();
             foreach ($session->all() as $key => $value) {
                 if (str_starts_with($key, $this->prefix) && $key != $fullKey) {

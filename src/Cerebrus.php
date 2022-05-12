@@ -27,11 +27,13 @@ class Cerebrus
 
     public function has(string $key): bool
     {
+        info('[Cerebrus] Checking ' . $key);
         return isset($_SESSION[$key]);
     }
 
     public function get(string $key)
     {
+        info('[Cerebrus] Getting ' . $key);
         return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
     }
 
@@ -42,12 +44,14 @@ class Cerebrus
 
     public function set(string $key, mixed $value): void
     {
+        info('[Cerebrus] Setting ' . $key);
         $_SESSION[$key] = $value;
     }
 
     public function unset(string $key): void
     {
         if (array_key_exists($key, $_SESSION)) {
+            info('[Cerebrus] Unsetting ' . $key);
             unset($_SESSION[$key]);
         } else {
             throw new OutOfRangeException($key." doesn't exist");
