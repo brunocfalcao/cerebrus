@@ -51,20 +51,16 @@ trait ConcernsSessionPersistence
 
         // Remove all prefixes except the one that has this session id.
         if ($invalidate) {
-            info('[ConcernsSessionPersistence] Invalidation requested for key ' . $this->prefix);
             $fullKey = $this->key();
             foreach ($session->all() as $key => $value) {
                 if (str_starts_with($key, $this->prefix) && $key != $fullKey) {
-                    info('[ConcernsSessionPersistence] - Unsetting "'.$this->key());
                     $session->unset($key);
                 }
             }
         }
 
-        // Do we already have a session key?
-        if ($session->has($this->key()) || $this->forceRefresh) {
-            info('[ConcernsSessionPersistence] - Returning "'.$this->key().'" key');
-
+        // Do we already have a session key (without a force refresh) ?
+        if ($session->has($this->key()) && ! $this->forceRefresh) {
             return $session->get($this->key());
         }
 
@@ -75,7 +71,6 @@ trait ConcernsSessionPersistence
         // the only allowed if allowNulls = true (default = false).
         if (($this->isEmpty($result) && $this->allowNulls) ||
             ! $this->isEmpty($result)) {
-                info('[ConcernsSessionPersistence] - Adding "'.$this->key().'" with value "'.json_encode($result).'"');
                 $session->set($this->key(), $result);
 
                 return $result;
@@ -93,8 +88,6 @@ trait ConcernsSessionPersistence
     {
         if ($function() == true) {
             $this->forceRefresh = true;
-        } else {
-            $this->forceRefresh = false;
         }
 
         return $this;
