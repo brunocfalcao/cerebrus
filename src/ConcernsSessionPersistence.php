@@ -7,6 +7,20 @@ namespace Brunocfalcao\Cerebrus;
  * - Uses the property $this->prefix, should be instanciated on
  *   the class constructor with the prefix to be used.
  *   e.g.: $this->prefix = 'eduka:application:user';.
+ *
+ * - Renews a session if the current session id is different from the
+ *   loaded (if any) session id. Meaning we will always have fresh data
+ *   for a fresh session.
+ *
+ * - Have a conditional forcing refresh for cases where we need extra
+ *   decision to renew the session, not only based on if the session id
+ *   is different from the previous one.
+ *
+ * - In case a session was refresh now, and there is another calling to the
+ *   same class, it will not renew the session again, (unless the forced
+ *   refreshed is triggered). This condition will help when we have several
+ *   calls on the same webpage and we don't need to process the getOr() all
+ *   the time.
  */
 trait ConcernsSessionPersistence
 {
@@ -53,7 +67,9 @@ trait ConcernsSessionPersistence
         if ($invalidate) {
             $fullKey = $this->key();
             foreach ($session->all() as $key => $value) {
-                if (str_starts_with($key, $this->prefix) && $key != $fullKey) {
+                if (str_starts_with($key, $this->prefix) &&
+                    $key != $fullKey &&
+                    !str_ends_with($key, ':_was-computed')) {
                     $session->unset($key);
                 }
             }
@@ -64,7 +80,27 @@ trait ConcernsSessionPersistence
             return $session->get($this->key());
         }
 
-        // Compute and store a session key value (if allowed).
+        /**
+         * Last validation is a session optimization. In case we already had
+         * computed this key in this service provider session, then you don't
+         * need to compute it again. This will avoid computing the same key
+         * over and over during the same request lifecycle.
+         *
+         * The <prefix>:_was-computed key will have a boolean true when this
+         * computation was already done, so in the next time we don't need
+         * to load it again inside the same session.
+         *
+         */
+        $wasComputed = $this->prefix . ':_was-computed';
+        $session = new Cerebrus();
+        if ($session->has($wasComputed)) {
+            return $session->get($this->key());
+        }
+
+        /**
+         * Compute callable and store it in session. Also we need to store
+         * an indicator that we have ran this in the same provider session.
+         */
         $result = $callable();
 
         // Add callable result to session if it's not null or if it's null
@@ -72,6 +108,9 @@ trait ConcernsSessionPersistence
         if (($this->isEmpty($result) && $this->allowNulls) ||
             ! $this->isEmpty($result)) {
                 $session->set($this->key(), $result);
+
+                // Also set the :_was-computed key for further optimizations.
+                $session->set($wasComputed, true);
 
                 return $result;
         }
