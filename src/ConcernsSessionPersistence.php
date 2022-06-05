@@ -69,7 +69,7 @@ trait ConcernsSessionPersistence
             foreach ($session->all() as $key => $value) {
                 if (str_starts_with($key, $this->prefix) &&
                     $key != $fullKey &&
-                    !str_ends_with($key, ':_was-computed')) {
+                    ! str_ends_with($key, ':_was-computed')) {
                     $session->unset($key);
                 }
             }
@@ -89,9 +89,8 @@ trait ConcernsSessionPersistence
          * The <prefix>:_was-computed key will have a boolean true when this
          * computation was already done, so in the next time we don't need
          * to load it again inside the same session.
-         *
          */
-        $wasComputed = $this->prefix . ':_was-computed';
+        $wasComputed = $this->prefix.':_was-computed';
         $session = new Cerebrus();
         if ($session->has($wasComputed)) {
             return $session->get($this->key());

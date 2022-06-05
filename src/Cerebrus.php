@@ -81,7 +81,7 @@ class Cerebrus
              */
             if (! is_dir(session_save_path())) {
                 $path = $path ?? base_path('tmp');
-                mkdir($path);
+                @mkdir($path);
                 session_save_path($path);
             }
 
