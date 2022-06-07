@@ -25,6 +25,16 @@ namespace Brunocfalcao\Cerebrus;
 trait ConcernsSessionPersistence
 {
     /**
+     * Forces the computation even if there is a local computation done.
+     * Basically it overrides the ":_was-computed" logic and always forces
+     * a computation.
+     * Used with the method $this->forceCompute().
+     *
+     * @var bool
+     */
+    protected $forceCompute = false;
+
+    /**
      * The session prefix (without the session id suffix).
      *
      * @var string
@@ -41,10 +51,24 @@ trait ConcernsSessionPersistence
 
     /**
      * Used with the method $this->alwaysRefreshIf().
+     * This is not the same as the force compute!
      *
      * @var bool
      */
     protected $forceRefresh = false;
+
+    /**
+     * Forces the local computation. Please check the :_was-computed flag.
+     *
+     * @param  bool|boolean $force
+     * @return this
+     */
+    public function forceCompute(bool $force = true)
+    {
+        $this->forceCompute = $force;
+
+        return $this;
+    }
 
     /**
      * Refreshes the session key, in case the session is invalid.
@@ -63,7 +87,7 @@ trait ConcernsSessionPersistence
          */
         $session = new Cerebrus();
 
-        // Remove all prefixes except the one that has this session id.
+        // Remove all session prefixes except the one that has this session id.
         if ($invalidate) {
             $fullKey = $this->key();
             foreach ($session->all() as $key => $value) {
@@ -75,11 +99,6 @@ trait ConcernsSessionPersistence
             }
         }
 
-        // Do we already have a session key (without a force refresh) ?
-        if ($session->has($this->key()) && ! $this->forceRefresh) {
-            return $session->get($this->key());
-        }
-
         /**
          * Last validation is a session optimization. In case we already had
          * computed this key in this service provider session, then you don't
@@ -89,10 +108,28 @@ trait ConcernsSessionPersistence
          * The <prefix>:_was-computed key will have a boolean true when this
          * computation was already done, so in the next time we don't need
          * to load it again inside the same session.
+         *
+         * The prefix can be overriden by a global .env variabled called
+         * EDUKA_FORCE_SESSION_COMPUTE. If it's true will always for the
+         * local computation no matter what session variables are we working
+         * with.
          */
+        if (env('EDUKA_FORCE_SESSION_COMPUTE') == true) {
+            $this->forceCompute();
+        }
+
+        // Do we already have a session key (without a force refresh neither
+        // a force compute) ?
+        if ($session->has($this->key()) &&
+            !$this->forceRefresh &&
+            !$this->forceCompute) {
+            return $session->get($this->key());
+        }
+
         $wasComputed = $this->prefix.':_was-computed';
+
         $session = new Cerebrus();
-        if ($session->has($wasComputed)) {
+        if ($session->has($wasComputed) && !$this->forceCompute) {
             return $session->get($this->key());
         }
 
