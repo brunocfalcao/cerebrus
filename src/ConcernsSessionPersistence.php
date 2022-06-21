@@ -60,8 +60,8 @@ trait ConcernsSessionPersistence
     /**
      * Forces the local computation. Please check the :_was-computed flag.
      *
-     * @param  bool|boolean $force
-     * @return this
+     * @param  bool|bool  $force
+     * @return $this
      */
     public function forceCompute(bool $force = true)
     {
@@ -121,15 +121,15 @@ trait ConcernsSessionPersistence
         // Do we already have a session key (without a force refresh neither
         // a force compute) ?
         if ($session->has($this->key()) &&
-            !$this->forceRefresh &&
-            !$this->forceCompute) {
+            ! $this->forceRefresh &&
+            ! $this->forceCompute) {
             return $session->get($this->key());
         }
 
         $wasComputed = $this->prefix.':_was-computed';
 
         $session = new Cerebrus();
-        if ($session->has($wasComputed) && !$this->forceCompute) {
+        if ($session->has($wasComputed) && ! $this->forceCompute) {
             return $session->get($this->key());
         }
 
