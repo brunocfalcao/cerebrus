@@ -105,6 +105,12 @@ trait ConcernsSessionPersistence
          * need to compute it again. This will avoid computing the same key
          * over and over during the same request lifecycle.
          *
+         * E.g.: If you call the same method that calculates somethid inside
+         * the same page view, this will will:
+         * 1. Verify if the session exists, and if not compute it a first time.
+         * 2. Henceforth will not compute it again, but use the session value
+         *    that is now created.
+         *
          * The <prefix>:_was-computed key will have a boolean true when this
          * computation was already done, so in the next time we don't need
          * to load it again inside the same session.
