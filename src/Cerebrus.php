@@ -51,7 +51,7 @@ class Cerebrus
     {
         if (array_key_exists($key, $_SESSION)) {
             unset($_SESSION[$key]);
-        };
+        }
     }
 
     public function destroy(): void

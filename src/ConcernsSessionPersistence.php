@@ -18,9 +18,8 @@ trait ConcernsSessionPersistence
      * but for a different prefix than the one assigned via the $this->prefix
      * attribute.
      *
-     * @param  callable    $callable The returned session value callable.
-     *
-     * @return this
+     * @param  callable  $callable The returned session value callable.
+     * @return $this
      */
     public function persist(callable $callable)
     {
@@ -54,9 +53,8 @@ trait ConcernsSessionPersistence
     /**
      * Overwrites a session key, or writes for the first time.
      *
-     * @param  callable $callable The returned session value callable.
-     *
-     * @return this
+     * @param  callable  $callable The returned session value callable.
+     * @return $this
      */
     public function overwrite(callable $callable)
     {
@@ -127,8 +125,7 @@ trait ConcernsSessionPersistence
     /**
      * Computes a callable (normally used for the persist() and overwrite()).
      *
-     * @param  callable $callable
-     *
+     * @param  callable  $callable
      * @return mixed
      */
     protected function compute(callable $callable)
@@ -139,7 +136,7 @@ trait ConcernsSessionPersistence
     protected function checkRequirements()
     {
         if (blank($this->prefix)) {
-            throw new \Exception("No key defined for the session persistence instance");
+            throw new \Exception('No key defined for the session persistence instance');
         }
     }
 }
