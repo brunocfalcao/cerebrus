@@ -125,7 +125,6 @@ trait ConcernsSessionPersistence
     /**
      * Computes a callable (normally used for the persist() and overwrite()).
      *
-     * @param  callable  $callable
      * @return mixed
      */
     protected function compute(callable $callable)
