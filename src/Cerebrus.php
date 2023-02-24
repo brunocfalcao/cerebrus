@@ -4,13 +4,13 @@ namespace Brunocfalcao\Cerebrus;
 
 class Cerebrus
 {
-    private static $_instance = null;
-
     public const PHP_SESSION_DISABLED = 'SESSION_DISABLED';
 
     public const PHP_SESSION_NONE = 'SESSION_NONE';
 
     public const PHP_SESSION_ACTIVE = 'SESSION_ACTIVE';
+
+    private static $_instance = null;
 
     public function __construct(string $path = null)
     {
@@ -34,7 +34,7 @@ class Cerebrus
 
     public function get(string $key)
     {
-        return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+        return $_SESSION[$key] ?? null;
     }
 
     public function all(): ?array
@@ -80,7 +80,7 @@ class Cerebrus
              * in the /tmp on your Laravel project base path.
              */
             if (! is_dir(session_save_path())) {
-                $path = $path ?? base_path('tmp');
+                $path ??= base_path('tmp');
                 @mkdir($path);
                 session_save_path($path);
             }

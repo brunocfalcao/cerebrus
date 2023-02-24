@@ -92,6 +92,11 @@ trait ConcernsSessionPersistence
         return $this;
     }
 
+    public function sessionId()
+    {
+        return (new Cerebrus())->getId();
+    }
+
     /**
      * Returns the session value in case the session is valid. If not, then
      * assesses the session and returns the value.
@@ -103,11 +108,6 @@ trait ConcernsSessionPersistence
         $this->checkRequirements();
 
         return (new Cerebrus())->get($this->key());
-    }
-
-    public function sessionId()
-    {
-        return (new Cerebrus())->getId();
     }
 
     /**
