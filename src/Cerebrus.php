@@ -17,7 +17,6 @@ class Cerebrus
         switch ($status) {
             case PHP_SESSION_DISABLED:
                 throw new \Exception('Your web app cannot use sessions. Cerebrus aborted');
-
             case PHP_SESSION_NONE:
                 $this->start($path);
                 break;
@@ -26,32 +25,28 @@ class Cerebrus
 
     /**
      * Check if a session variable exists.
-     *
-     * @param string $key
-     * @return bool
      */
     public function has(string $key): bool
     {
         $this->checkDuration($key);
+
         return isset($_SESSION[$key]);
     }
 
     /**
      * Get a session variable.
      *
-     * @param string $key
      * @return mixed
      */
     public function get(string $key)
     {
         $this->checkDuration($key);
+
         return $_SESSION[$key] ?? null;
     }
 
     /**
      * Get all session variables.
-     *
-     * @return array|null
      */
     public function all(): ?array
     {
@@ -61,10 +56,7 @@ class Cerebrus
     /**
      * Set a session variable with a specific duration.
      *
-     * @param string $key
-     * @param mixed $value
-     * @param int $seconds
-     * @return void
+     * @param  int  $seconds
      */
     public function set(string $key, mixed $value, int $seconds = null): void
     {
@@ -78,9 +70,6 @@ class Cerebrus
 
     /**
      * Unset a session variable.
-     *
-     * @param string $key
-     * @return void
      */
     public function unset(string $key): void
     {
@@ -91,8 +80,6 @@ class Cerebrus
 
     /**
      * Destroy the session.
-     *
-     * @return void
      */
     public function destroy(): void
     {
@@ -101,8 +88,6 @@ class Cerebrus
 
     /**
      * Get the session status.
-     *
-     * @return int
      */
     public function getStatus(): int
     {
@@ -111,8 +96,6 @@ class Cerebrus
 
     /**
      * Get the session ID.
-     *
-     * @return string
      */
     public function getId(): string
     {
@@ -121,15 +104,12 @@ class Cerebrus
 
     /**
      * Start the session.
-     *
-     * @param string|null $path
-     * @return void
      */
-    private function start(string|null $path = 'tmp'): void
+    private function start(?string $path = 'tmp'): void
     {
         $sessionPath = $path ?? base_path('tmp');
 
-        if (!is_dir($sessionPath)) {
+        if (! is_dir($sessionPath)) {
             mkdir($sessionPath);
         }
 
@@ -140,9 +120,6 @@ class Cerebrus
 
     /**
      * Check the duration of a session variable and unset it if expired.
-     *
-     * @param string $key
-     * @return void
      */
     private function checkDuration(string $key): void
     {
