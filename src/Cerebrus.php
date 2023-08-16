@@ -10,8 +10,6 @@ class Cerebrus
 
     public const PHP_SESSION_ACTIVE = 'SESSION_ACTIVE';
 
-    private static $_instance = null;
-
     public function __construct(string $path = null)
     {
         $status = session_status();
@@ -19,7 +17,6 @@ class Cerebrus
         switch ($status) {
             case PHP_SESSION_DISABLED:
                 throw new \Exception('Your web app cannot use sessions. Cerebrus aborted');
-                break;
 
             case PHP_SESSION_NONE:
                 $this->start($path);
@@ -27,26 +24,64 @@ class Cerebrus
         }
     }
 
+    /**
+     * Check if a session variable exists.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function has(string $key): bool
     {
+        $this->checkDuration($key);
         return isset($_SESSION[$key]);
     }
 
+    /**
+     * Get a session variable.
+     *
+     * @param string $key
+     * @return mixed
+     */
     public function get(string $key)
     {
+        $this->checkDuration($key);
         return $_SESSION[$key] ?? null;
     }
 
+    /**
+     * Get all session variables.
+     *
+     * @return array|null
+     */
     public function all(): ?array
     {
         return $_SESSION;
     }
 
-    public function set(string $key, mixed $value): void
+    /**
+     * Set a session variable with a specific duration.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param int $seconds
+     * @return void
+     */
+    public function set(string $key, mixed $value, int $seconds = null): void
     {
         $_SESSION[$key] = $value;
+
+        if ($seconds !== null) {
+            $expirationTime = time() + $seconds;
+            $_SESSION["{$key}__duration"] = $expirationTime;
+        }
     }
 
+    /**
+     * Unset a session variable.
+     *
+     * @param string $key
+     * @return void
+     */
     public function unset(string $key): void
     {
         if (array_key_exists($key, $_SESSION)) {
@@ -54,38 +89,66 @@ class Cerebrus
         }
     }
 
+    /**
+     * Destroy the session.
+     *
+     * @return void
+     */
     public function destroy(): void
     {
         session_destroy();
     }
 
+    /**
+     * Get the session status.
+     *
+     * @return int
+     */
     public function getStatus(): int
     {
         return session_status();
     }
 
+    /**
+     * Get the session ID.
+     *
+     * @return string
+     */
     public function getId(): string
     {
         return session_id();
     }
 
+    /**
+     * Start the session.
+     *
+     * @param string|null $path
+     * @return void
+     */
     private function start(string|null $path = 'tmp'): void
     {
-        try {
-            session_start();
-        } catch (\Exception $e) {
-            /**
-             * Mostly a file write directory exception.
-             * Creates and set the session writable directory path
-             * in the /tmp on your Laravel project base path.
-             */
-            if (! is_dir(session_save_path())) {
-                $path ??= base_path('tmp');
-                @mkdir($path);
-                session_save_path($path);
-            }
+        $sessionPath = $path ?? base_path('tmp');
 
-            session_start();
+        if (!is_dir($sessionPath)) {
+            mkdir($sessionPath);
+        }
+
+        session_save_path($sessionPath);
+
+        session_start();
+    }
+
+    /**
+     * Check the duration of a session variable and unset it if expired.
+     *
+     * @param string $key
+     * @return void
+     */
+    private function checkDuration(string $key): void
+    {
+        if (isset($_SESSION["{$key}__duration"]) && time() > $_SESSION["{$key}__duration"]) {
+            unset($_SESSION[$key]);
+            unset($_SESSION["{$key}__duration"]);
         }
     }
 }
