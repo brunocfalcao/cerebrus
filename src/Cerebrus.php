@@ -55,8 +55,6 @@ class Cerebrus
 
     /**
      * Set a session variable with a specific duration.
-     *
-     * @param  int  $seconds
      */
     public function set(string $key, mixed $value, int $seconds = null): void
     {
