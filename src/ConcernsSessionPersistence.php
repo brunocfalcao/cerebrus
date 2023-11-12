@@ -72,6 +72,14 @@ trait ConcernsSessionPersistence
 
         $session = new Cerebrus();
 
+        // Session key exists, but has a null value? Invalidate.
+        if ($this->key() === null && $invalidateEmptys) {
+            $session->unset($this->key());
+
+            return;
+        }
+
+        // Callable returns true? Invalidate.
         if ($callable() === true) {
             $session->unset($this->key());
         }
