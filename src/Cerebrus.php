@@ -10,7 +10,7 @@ class Cerebrus
 
     public const PHP_SESSION_ACTIVE = 'SESSION_ACTIVE';
 
-    public function __construct(string $path = null)
+    public function __construct(?string $path = null)
     {
         $status = session_status();
 
@@ -56,7 +56,7 @@ class Cerebrus
     /**
      * Set a session variable with a specific duration.
      */
-    public function set(string $key, mixed $value, int $seconds = null): void
+    public function set(string $key, mixed $value, ?int $seconds = null): void
     {
         $_SESSION[$key] = $value;
 
