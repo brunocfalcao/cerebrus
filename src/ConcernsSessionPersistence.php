@@ -18,7 +18,7 @@ trait ConcernsSessionPersistence
      * but for a different prefix than the one assigned via the $this->prefix
      * attribute.
      *
-     * @param  callable  $callable The returned session value callable.
+     * @param  callable  $callable  The returned session value callable.
      * @return $this
      */
     public function persist(callable $callable)
@@ -53,7 +53,7 @@ trait ConcernsSessionPersistence
     /**
      * Overwrites a session key, or writes for the first time.
      *
-     * @param  callable  $callable The returned session value callable.
+     * @param  callable  $callable  The returned session value callable.
      * @return $this
      */
     public function overwrite(callable $callable)
@@ -90,7 +90,7 @@ trait ConcernsSessionPersistence
     /**
      * Sets the session prefix to be used on the next calls.
      *
-     * @param  string  $prefix Session prefix
+     * @param  string  $prefix  Session prefix
      * @return $this
      */
     public function withPrefix(string $prefix)
