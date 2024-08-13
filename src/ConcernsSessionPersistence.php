@@ -25,7 +25,7 @@ trait ConcernsSessionPersistence
     {
         $this->checkRequirements();
 
-        $session = new Cerebrus();
+        $session = new Cerebrus;
 
         // Do we already have a session key? -- Just return it.
         if ($session->has($this->key())) {
@@ -61,7 +61,7 @@ trait ConcernsSessionPersistence
         $this->checkRequirements();
 
         // Compute callable and store/overwrite it in session.
-        (new Cerebrus())->set($this->key(), $this->compute($callable));
+        (new Cerebrus)->set($this->key(), $this->compute($callable));
 
         return $this;
     }
@@ -70,7 +70,7 @@ trait ConcernsSessionPersistence
     {
         $this->checkRequirements();
 
-        $session = new Cerebrus();
+        $session = new Cerebrus;
 
         // Session key exists, but has a null value? Invalidate.
         if ($this->key() === null && $invalidateEmptys) {
@@ -102,7 +102,7 @@ trait ConcernsSessionPersistence
 
     public function sessionId()
     {
-        return (new Cerebrus())->getId();
+        return (new Cerebrus)->getId();
     }
 
     /**
@@ -115,7 +115,7 @@ trait ConcernsSessionPersistence
     {
         $this->checkRequirements();
 
-        return (new Cerebrus())->get($this->key());
+        return (new Cerebrus)->get($this->key());
     }
 
     /**
@@ -127,7 +127,7 @@ trait ConcernsSessionPersistence
     {
         $this->checkRequirements();
 
-        return $this->prefix.':'.(new Cerebrus())->getId();
+        return $this->prefix.':'.(new Cerebrus)->getId();
     }
 
     /**
